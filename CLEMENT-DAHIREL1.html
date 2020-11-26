@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>My APP VueJS</title>
+    <style type="text/css">
+        body {
+            background-image: url(https://images4.alphacoders.com/229/thumb-1920-229628.jpg);
+            text-align: center;
+            opacity: 10;
+        }
+
+        img {
+            color: #fff;
+            width: 20%;
+            filter: sepia(100%);
+            -webkit-filter: sepia(100%);
+        }
+
+        #new-todo {
+            background: url(https://img.icons8.com/ios/452/christmas-tree.png) no-repeat 8px 3px #fff;
+            background-size: 13%;
+            border-width: 1px;
+            border-style: solid;
+            font: bold 15px Arial, Helvetica, Sans-serif;
+            color: #2c2c2c;
+            padding: 1% 5% 1% 5%;
+        }
+
+        .list {
+            margin-top: 20px;
+
+        }
+
+        .Text-Liste {
+            background: #fff;
+            border: 4px solid #008341;
+            border-width: 3px;
+            border-style: solid;
+            font: bold 12px Arial, Helvetica, Sans-serif;
+            color: #2c2c2c;
+            padding: 1% 10% 1% 8%;
+        }
+
+        #btn-add {
+            background: #6A6F75;
+            border-width: 0px;
+            padding: 1% 1%;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 0 1px 0 #555;
+        }
+
+        #btn-add:hover {
+            background: #35658a;
+        }
+
+        #btn-remove {
+            background: #8b1b1b;
+            border-width: 0px;
+            padding: 1% 1%;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 0 1px 0#8b1b1b;
+        }
+
+        #btn-remove:hover {
+            background: #a75f0e;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="todos">
+            <img src="https://todo-list.ch/wp-content/uploads/2016/10/logo_script_blue_00-1.png">
+            <form v-on:submit.prevent="addNewTodo">
+                <input v-model="newTodoText" id="new-todo" placeholder="Travailler" />
+                <button id="btn-add"><i class="fa fa-plus fa-lg"></i></button>
+            </form>
+            <ol>
+                <todo-item v-for="(item,index) in todoList" v-bind:item="item" v-bind:key="item.id"
+                    v-on:remove="removeItem(index)">
+                </todo-item>
+            </ol>
+        </div>
+    </div>
+    <script>
+        Vue.component('todo-item', {
+            props: ['item'],
+            template: '<ul class="list"><a class="Text-Liste">{{ item.text }}</a>\
+               <button id="btn-remove" v-on:click="$emit(\'remove\')"><i class="fa fa-times fa-lg"></i></button>\
+            </ul>'
+        })
+
+        const TODO_LIST = 'todo_list'
+        var todoListDonneeLocal = window.localStorage.getItem(TODO_LIST)
+        var saveTodoList = []
+        var nextItemId = 1;
+        if (todoListDonneeLocal != null) {
+            saveTodoList = JSON.parse(todoListDonneeLocal)
+            nextItemId = saveTodoList.length + 1;
+        }
+
+        var todos = new Vue({
+            el: '#todos',
+            data: {
+                newTodoText: '',
+                todoList: saveTodoList,
+                nextTodoId: nextItemId
+            },
+            methods: {
+                saveList: function () {
+                    var todoListData = JSON.stringify(this.todoList)
+                    window.localStorage.setItem(TODO_LIST, todoListData)
+                },
+                addNewTodo: function () {
+                    this.todoList.push({
+                        id: this.nextTodoId++,
+                        text: this.newTodoText
+                    })
+
+                    this.saveList()
+                    this.newTodoText = ''
+                },
+                removeItem: function (index) {
+                    this.todoList.splice(index, 1)
+
+                    this.saveList()
+                    this.newTodoText = ''
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
